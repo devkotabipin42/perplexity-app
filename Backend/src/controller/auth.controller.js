@@ -1,5 +1,5 @@
 import userModel from "../model/user.model.js";
-import jwt from "jsonwebtoken";
+import jwt, { decode } from "jsonwebtoken";
 import { sendEmail } from "../services/mail.service.js";
 
 
@@ -57,4 +57,107 @@ export async function register(req, res) {
 
 
 }
+export async function login(req,res){
+    const {email,password} = req.body
+    const user = await userModel.findOne({email})
+
+    if (!user){
+        return req.status(400).json({
+            message:'Invalid email or password',
+            sucess:false,
+            err:'User not found'
+        })
+    }
+    const hash = await user.comparePassword(password)
+
+    if(!hash){
+        return res.status(400).json({
+            message:'invalid email or password',
+            success:false,
+            err:'incorrect password'
+        })
+    }
+    if(!user.verified){
+        return res.status(400).json({
+            message:'please verify your email before logging in',
+            sucess:false,
+            err:"Email not. verifed"
+        })
+    }
+
+    const token = jwt.sign({
+        id:user.id,
+        username:user.username
+    },process.env.JWT_SECRET,{expiresIn:'7d'})
+
+    res.cookie('token',token)
+    res.status(200).json({
+        message:'Login sucessFull',
+        success:true,
+        user:{
+            id:user._id,
+            username:user.username,
+            email:user.email
+        }
+    })
+}
+
+export async function getMe(req,res){
+    const userId = req.user.id
+    const user = await userModel.findById(userId).select('-password')
+
+    if(!user){
+        return res.status(404).json({
+            message:'user not found',
+            sucess:false,
+            err:"user not found"
+        })
+    }
+    res.status(200).json({
+        message:'user details fetch sucessfully',
+        sucess:true,
+        user
+    })
+}
+export async function verifyEmail(req, res) {
+    const { token } = req.query;
+
+    try {
+
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+
+        const user = await userModel.findOne({ email: decoded.email });
+
+        if (!user) {
+            return res.status(400).json({
+                message: "Invalid token",
+                success: false,
+                err: "User not found"
+            })
+        }
+
+        user.verified = true;
+
+        await user.save();
+
+        const html =
+            `
+        <h1>Email Verified Successfully!</h1>
+        <p>Your email has been verified. You can now log in to your account.</p>
+        <a href="http://localhost:3000/login">Go to Login</a>
+    `
+
+        return res.send(html);
+    } catch (err) {
+        return res.status(400).json({
+            message: "Invalid or expired token",
+            success: false,
+            err: err.message
+        })
+    }
+}
+
+
 
