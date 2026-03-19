@@ -11,3 +11,10 @@ export async function testAi(){
         
     })
 }
+
+export async function generateResponse(message){
+    const response = await model.invoke([
+        new HumanMessage(message)
+    ])
+    return response.text
+}
