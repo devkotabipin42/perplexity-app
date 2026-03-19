@@ -1,24 +1,34 @@
 import { useState } from "react";
+import { useSelector } from "react-redux";
+import { Link, Navigate, useNavigate } from "react-router";
+import { useAuth } from "../hook/useAuth";
 
 export default function Login() {
-  const [formData, setFormData] = useState({
-    username: "",
-    password: "",
-  });
-  const [submitted, setSubmitted] = useState(null);
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
 
-  // Two-way binding
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  const user = useSelector(state => state.auth.user)
+  const loading = useSelector(state => state.auth.loading)
 
-  // Handle Submit
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!formData.username || !formData.password) return;
-    console.log("Login Data:", formData);
-    setSubmitted({ ...formData });
-  };
+  const { handleLogin } = useAuth()
+
+  const navigate = useNavigate()
+
+  const handleSubmit = async (event) => {
+    event.preventDefault()
+
+    const payload = {
+      email,
+      password,
+    }
+
+    await handleLogin(payload)
+    navigate("/")
+  }
+
+  if (!loading && user) {
+    return <Navigate to="/" replace />
+  }
 
   return (
     <div className="min-h-screen bg-[#050508] flex items-center justify-center p-4 relative overflow-hidden">
@@ -63,10 +73,10 @@ export default function Login() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
 
-            {/* Username */}
+            {/* Email */}
             <div className="space-y-1.5">
               <label className="text-[11px] font-semibold text-white/40 uppercase tracking-widest">
-                Username
+                Email
               </label>
               <div className="relative">
                 <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/20 text-sm">
@@ -74,10 +84,10 @@ export default function Login() {
                 </span>
                 <input
                   type="text"
-                  name="username"
-                  placeholder="your_username"
-                  value={formData.username}
-                  onChange={handleChange}
+                  name="email"
+                  placeholder="you@example.com"
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
                   className="w-full pl-8 pr-4 py-3 bg-white/[0.04] border border-white/[0.07] rounded-xl text-white text-sm placeholder-white/15 outline-none focus:border-indigo-500/60 focus:bg-indigo-500/[0.06] focus:ring-1 focus:ring-indigo-500/20 transition-all duration-200"
                 />
               </div>
@@ -89,9 +99,6 @@ export default function Login() {
                 <label className="text-[11px] font-semibold text-white/40 uppercase tracking-widest">
                   Password
                 </label>
-                {/* <span className="text-[11px] text-indigo-400/70 cursor-pointer hover:text-indigo-400 transition-colors">
-                  Forgot password?
-                </span> */}
               </div>
               <div className="relative">
                 <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/20 text-sm">
@@ -101,28 +108,28 @@ export default function Login() {
                   type="password"
                   name="password"
                   placeholder="••••••••••"
-                  value={formData.password}
-                  onChange={handleChange}
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
                   className="w-full pl-9 pr-4 py-3 bg-white/[0.04] border border-white/[0.07] rounded-xl text-white text-sm placeholder-white/15 outline-none focus:border-indigo-500/60 focus:bg-indigo-500/[0.06] focus:ring-1 focus:ring-indigo-500/20 transition-all duration-200"
                 />
               </div>
             </div>
 
             {/* Live State Preview */}
-            {(formData.username || formData.password) && (
+            {(email || password) && (
               <div className="bg-black/40 border border-white/[0.05] rounded-xl p-3 font-mono">
                 <p className="text-[10px] text-white/20 uppercase tracking-widest mb-2">
                   state
                 </p>
                 <p className="text-xs">
-                  <span className="text-indigo-400">username</span>
+                  <span className="text-indigo-400">email</span>
                   <span className="text-white/20">: </span>
-                  <span className="text-emerald-400/80">"{formData.username}"</span>
+                  <span className="text-emerald-400/80">"{email}"</span>
                 </p>
                 <p className="text-xs mt-0.5">
                   <span className="text-indigo-400">password</span>
                   <span className="text-white/20">: </span>
-                  <span className="text-emerald-400/80">"{formData.password.replace(/./g, "•")}"</span>
+                  <span className="text-emerald-400/80">"{password.replace(/./g, "•")}"</span>
                 </p>
               </div>
             )}
@@ -135,23 +142,14 @@ export default function Login() {
               Sign In
             </button>
 
-            {/* Success */}
-            {submitted && (
-              <div className="bg-emerald-950/60 border border-emerald-500/20 rounded-xl p-3 text-emerald-400 text-xs">
-                ✅ <strong>Login successful!</strong>
-                <br />
-                User: <span className="text-emerald-300">{submitted.username}</span>
-              </div>
-            )}
-
           </form>
 
           {/* Footer */}
           <p className="text-center text-white/20 text-xs mt-6">
             Don't have an account?{" "}
-            <span className="text-indigo-400/80 cursor-pointer hover:text-indigo-400 transition-colors font-medium">
+            <Link to="/register" className="text-indigo-400/80 cursor-pointer hover:text-indigo-400 transition-colors font-medium">
               Register
-            </span>
+            </Link>
           </p>
         </div>
 

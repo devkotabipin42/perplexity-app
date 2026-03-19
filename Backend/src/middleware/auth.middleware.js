@@ -5,7 +5,7 @@ import jwt from "jsonwebtoken";
 export function authUser(req,res,next){
     const token = req.cookies.token
     if (!token){
-        return req.status(401).json({
+        return res.status(401).json({
             message:'Unauthorized',
             sucess:false,
             err:'No token provided'
@@ -19,7 +19,7 @@ export function authUser(req,res,next){
     }catch(err){
         res.status(401).json({
             message:'Unauthorized',
-            sucess:false,
+            success:false,
             err:'Invalid token'
         })
     }

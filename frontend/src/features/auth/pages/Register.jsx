@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router";
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -194,9 +195,9 @@ export default function Register() {
           {/* Footer */}
           <p className="text-center text-white/20 text-xs mt-6">
             Already have an account?{" "}
-            <span className="text-violet-400/80 cursor-pointer hover:text-violet-400 transition-colors font-medium">
+            <Link to='/login' className="text-violet-400/80 cursor-pointer hover:text-violet-400 transition-colors font-medium">
               Sign In
-            </span>
+            </Link>
           </p>
         </div>
 
