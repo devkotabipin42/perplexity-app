@@ -6,9 +6,9 @@ export const useChat = ()=>{
 
     const dispatch = useDispatch()
 
-    async function handleSendMessage({ message, chatId }) {
+    async function handleSendMessage({ message, chatId,image }) {
         dispatch(setLoading(true))
-        const data = await sendMessage({ message, chatId })
+        const data = await sendMessage({ message, chatId,image })
         const { chat, aiMessage } = data
         if (!chatId)
             dispatch(cretateNewChat({
@@ -19,6 +19,7 @@ export const useChat = ()=>{
             chatId: chatId || chat._id,
             content: message,
             role: "user",
+            image: image ? URL.createObjectURL(image) : null,
         }))
         dispatch(addNewMessage({
             chatId: chatId || chat._id,

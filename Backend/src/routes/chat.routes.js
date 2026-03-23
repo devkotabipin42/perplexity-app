@@ -2,8 +2,10 @@ import { Router } from "express";
 import { sendMessage,getChats,getMessage,deleteChat } from "../controller/chat.controller.js";
 import { authUser } from "../middleware/auth.middleware.js";
 const chatRouter= Router()
+import multer from 'multer'
 
-chatRouter.post('/message',authUser,sendMessage)
+const upload = multer({ dest: 'uploads/' })
+chatRouter.post('/message',authUser,upload.single('image'),sendMessage)
 
 chatRouter.get('/',authUser,getChats)
 

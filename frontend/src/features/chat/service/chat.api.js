@@ -6,7 +6,19 @@ const api = axios.create({
 })
 
 
-export const sendMessage = async ({ message, chatId }) => {
+export const sendMessage = async ({ message, chatId, image }) => {
+    // ✅ agar image hai toh FormData use karo
+    if (image) {
+        const formData = new FormData()
+        if (message) formData.append('message', message)
+        if (chatId) formData.append('chat', chatId)
+        formData.append('image', image)
+        const response = await api.post("/api/chat/message", formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        })
+        return response.data
+    }
+
     const response = await api.post("/api/chat/message", { message, chat: chatId })
     return response.data
 }

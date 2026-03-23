@@ -35,27 +35,49 @@ const agent = createAgent({
     tools: [ searchInternetTool ],
 })
 
-export async function generateResponse(messages) {
+export async function generateResponse(messages, imageBase64 = null, imageMimeType = null) {
     console.log(messages)
 
+    // ✅ last user message
+    const lastUserMsg = messages.filter(m => m.role === 'user').pop()
+
+    // ✅ agar image hai toh Gemini Vision use karo
+    if (imageBase64) {
+        const response = await geminiModel.invoke([
+            new HumanMessage({
+                content: [
+                    {
+                        type: "image_url",
+                        image_url: {
+                            url: `data:${imageMimeType};base64,${imageBase64}`
+                        }
+                    },
+                    {
+                        type: "text",
+                        text: lastUserMsg?.content || "Analyze this image"
+                    }
+                ]
+            })
+        ])
+        return response.text
+    }
+
+    // ✅ normal text response — same as before
     const response = await agent.invoke({
         messages: [
             new SystemMessage(`
                 You are a helpful and precise assistant for answering questions.
                 If you don't know the answer, say you don't know. 
-                If the question requires up-to-date information, use the "searchInternet" tool to get the latest information from the internet and then answer based on the search results.
+                If the question requires up-to-date information, use the "searchInternet" tool.
             `),
             ...(messages.map(msg => {
-                if (msg.role == "user") {
-                    return new HumanMessage(msg.content)
-                } else if (msg.role == "ai") {
-                    return new AIMessage(msg.content)
-                }
-            })) ]
-    });
+                if (msg.role === "user") return new HumanMessage(msg.content)
+                else if (msg.role === "ai") return new AIMessage(msg.content)
+            }).filter(Boolean))
+        ]
+    })
 
-    return response.messages[ response.messages.length - 1 ].text;
-
+    return response.messages[response.messages.length - 1].text
 }
 
 

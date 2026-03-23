@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Link } from "react-router";
-
+import { Link, useNavigate } from "react-router";
+import{useAuth} from '../hook/useAuth'
 export default function Register() {
   const [formData, setFormData] = useState({
     username: "",
@@ -8,18 +8,19 @@ export default function Register() {
     password: "",
   });
   const [submitted, setSubmitted] = useState(null);
-
+  const {handleRegister} = useAuth()
+  const navigate = useNavigate()
   // Two-way binding
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   // Handle Submit
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
-    if (!formData.username || !formData.email || !formData.password) return;
-    console.log("Register Data:", formData);
-    setSubmitted({ ...formData });
+    if (!formData.username || !formData.email || !formData.password) return
+    await handleRegister(formData)
+    navigate('/login')
   };
 
   return (
