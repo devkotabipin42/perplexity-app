@@ -15,6 +15,7 @@ const chatSlice = createSlice({
             const {chatId,title}=action.payload
             state.chats[chatId]={
                 id:chatId,
+                title:title,
                 messages:[],
                 lastUpdated:new Date().toISOString()
             }
