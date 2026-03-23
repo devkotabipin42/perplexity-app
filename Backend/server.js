@@ -1,5 +1,5 @@
 import { config } from 'dotenv'
-config({ path: '.env' })
+config()
 
 const { default: app } = await import('./src/app.js')
 const { default: connectDb } = await import('./src/config/database.js')
