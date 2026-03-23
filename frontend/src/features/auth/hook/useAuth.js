@@ -1,5 +1,5 @@
 import {useDispatch} from 'react-redux'
-import {register,login,getMe} from '../services/auth.api'
+import {register,login,getMe,logout} from '../services/auth.api'
 import { setUser,setLoading,setError } from '../auth.slice'
 
 export function useAuth(){
@@ -30,6 +30,18 @@ export function useAuth(){
         }
     }
 
+    async function handleLogout() {
+    try {
+        dispatch(setLoading(true))
+        await logout()
+        dispatch(setUser(null))  // user Redux se clear 
+    } catch (error) {
+        dispatch(setError(error.response?.data?.message || 'Logout failed'))
+    } finally {
+        dispatch(setLoading(false))
+    }
+}
+
     async function handleGetMe(){
         try{
             dispatch(setLoading(true))
@@ -44,6 +56,7 @@ export function useAuth(){
     return {
         handleRegister,
         handleLogin,
-        handleGetMe
+        handleGetMe,
+        handleLogout
     }
 }

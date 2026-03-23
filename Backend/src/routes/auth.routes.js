@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { register ,verifyEmail,login,getMe} from "../controller/auth.controller.js";
+import { register ,verifyEmail,login,getMe,logout} from "../controller/auth.controller.js";
 import { loginValidator, registerValidator} from "../validator/auth.validator.js";
 import {authUser} from "../middleware/auth.middleware.js"
 const authRouter = Router();
@@ -13,6 +13,8 @@ const authRouter = Router();
 authRouter.post("/register", registerValidator, register);
 
 authRouter.post('/login',loginValidator,login)
+
+authRouter.post('/logout', authUser, logout)
 
 authRouter.get('/get-me',authUser,getMe)
 

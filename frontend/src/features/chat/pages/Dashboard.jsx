@@ -9,10 +9,13 @@ import {
   MessageSquare,
   Sparkles,
   Image as ImageIcon,
+  LogOut
 } from "lucide-react";
 import { setCurrentChatId } from "../chat.slice";
-
+import { useNavigate } from "react-router";
+import { useAuth } from "../../auth/hook/useAuth";
 const Dashboard = () => {
+const user = useSelector((state) => state.auth.user)
   const chat = useChat();
   const dispatch = useDispatch();
   const [chatInput, setChatInput] = useState("");
@@ -58,6 +61,13 @@ const Dashboard = () => {
   const handleNewChat = () => {
     dispatch(setCurrentChatId(null));
   };
+
+  const { handleLogout } = useAuth()
+  const navigate = useNavigate()
+  const onLogout = async () => {
+    await handleLogout()
+    navigate('/login')
+}
 
   const handleImageSelect = (e) => {
     const file = e.target.files[0];
@@ -166,14 +176,14 @@ const Dashboard = () => {
                 boxShadow: "0 0 14px rgba(124,106,247,0.3)",
               }}
             >
-              BD
+              {user?.username?.slice(0, 2).toUpperCase() || 'BD'}
             </div>
             <div>
               <p
                 className="text-sm font-medium"
                 style={{ color: "rgba(255,255,255,0.8)" }}
               >
-                Bipin Devkota
+                {user?.username || 'User'}
               </p>
               <p
                 className="text-[10px] flex items-center gap-1"
@@ -186,6 +196,11 @@ const Dashboard = () => {
                 Pro Plan
               </p>
             </div>
+            <button onClick={onLogout}
+            className="flex items-center justify-center rounded-lg transition-all hover:scale-105"
+            style={{ width: 28, height: 28, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}>
+            <LogOut size={13} style={{ color: 'rgba(255,255,255,0.4)' }} />
+            </button>
           </div>
         </div>
       </aside>
