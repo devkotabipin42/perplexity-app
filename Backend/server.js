@@ -1,5 +1,5 @@
 import { config } from 'dotenv'
-config({ path: '/etc/secrets/.env' })
+config({ path: process.env.NODE_ENV === 'production' ? '/etc/secrets/.env' : '.env' })
 
 const { default: app } = await import('./src/app.js')
 const { default: connectDb } = await import('./src/config/database.js')
