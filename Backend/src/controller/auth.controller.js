@@ -92,12 +92,13 @@ export async function login(req,res){
 
     res.cookie('token', token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    secure: true,
+    sameSite: 'none',
 })
     res.status(200).json({
         message:'Login sucessFull',
         success:true,
+        token: token,
         user:{
             id:user._id,
             username:user.username,

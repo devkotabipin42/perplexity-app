@@ -34,6 +34,7 @@ export function useAuth(){
     try {
         dispatch(setLoading(true))
         await logout()
+        localStorage.removeItem('token')
         dispatch(setUser(null))  // user Redux se clear 
     } catch (error) {
         dispatch(setError(error.response?.data?.message || 'Logout failed'))
