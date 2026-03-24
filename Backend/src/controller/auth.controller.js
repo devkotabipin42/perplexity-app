@@ -31,22 +31,18 @@ export async function register(req, res) {
         email: user.email,
     }, process.env.JWT_SECRET)
 
-    try {
     await sendEmail({
         to: email,
         subject: "Welcome to Perplexity!",
         html: `
-            <p>Hi ${username},</p>
-            <p>Thank you for registering at <strong>Perplexity</strong>!</p>
-            <p>Please verify your email:</p>
-            <a href="https://perplexity-app-1.onrender.com/api/auth/verify-email?token=${emailVerificationToken}">Verify Email</a>
-            <p>Best regards,<br>The Perplexity Team</p>
+                <p>Hi ${username},</p>
+                <p>Thank you for registering at <strong>Perplexity</strong>. We're excited to have you on board!</p>
+                <p>Please verify your email address by clicking the link below:</p>
+                <a href="http://localhost:3000/api/auth/verify-email?token=${emailVerificationToken}">Verify Email</a>
+                <p>If you did not create an account, please ignore this email.</p>
+                <p>Best regards,<br>The Perplexity Team</p>
         `
     })
-} catch (emailError) {
-    console.error("Email send failed:", emailError)
-    // email fail hone pe bhi register complete hoga
-}
     res.status(201).json({
         message: "User registered successfully",
         success: true,
