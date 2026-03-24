@@ -11,7 +11,7 @@ const transporter = nodemailer.createTransport({
     // }
      auth: {
     user: process.env.GOOGLE_USER,
-    pass: process.env.GOOGLE_APP_PASSWORD, // 
+    pass: process.env.MAIL_PASS, // 
   },
 })
 
