@@ -20,6 +20,7 @@ app.use(cors({
     credentials:true,
     methods:['GET','POST','PUT','DELETE']
 }))
+
 app.get("/", (req, res) => {
     res.json({ message: "Server is running" });
 });
